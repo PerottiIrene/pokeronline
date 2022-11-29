@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import it.prova.pokeronline.model.Tavolo;
+import it.prova.pokeronline.model.Utente;
 import it.prova.pokeronline.repository.tavolo.TavoloRepository;
 
 @Service
@@ -19,36 +20,35 @@ public class TavoloServiceImpl implements TavoloService{
 
 	@Override
 	public List<Tavolo> listAllElements(boolean eager) {
-		// TODO Auto-generated method stub
-		return null;
+		return (List<Tavolo>) tavoloRepository.findAll();
 	}
 
 	@Override
 	public Tavolo caricaSingoloElemento(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return tavoloRepository.findById(id).orElse(null);
 	}
 
 	@Override
 	public Tavolo caricaSingoloElementoEager(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return tavoloRepository.findByIdEagerUtentiGiocatori(id);
 	}
 
 	@Override
+	@Transactional
 	public Tavolo aggiorna(Tavolo tavoloInstance) {
-		// TODO Auto-generated method stub
-		return null;
+		return tavoloRepository.save(tavoloInstance);
 	}
 
 	@Override
+	@Transactional
 	public Tavolo inserisciNuovo(Tavolo tavoloInstance) {
 		return tavoloRepository.save(tavoloInstance);
 	}
 
 	@Override
+	@Transactional
 	public void rimuovi(Long idToRemove) {
-		// TODO Auto-generated method stub
+		tavoloRepository.deleteById(idToRemove);
 		
 	}
 
@@ -59,8 +59,7 @@ public class TavoloServiceImpl implements TavoloService{
 
 	@Override
 	public List<Tavolo> listAllElementsEager() {
-		// TODO Auto-generated method stub
-		return null;
+		return tavoloRepository.findAllEagerUtentiGiocatori();
 	}
 
 }

@@ -49,11 +49,11 @@ public class Utente {
 	@Enumerated(EnumType.STRING)
 	private StatoUtente stato;
 	
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "utenteCreazione")
 	private Set<Tavolo> tavoliCreati = new HashSet<Tavolo>(0);
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "tavolo_id", nullable = false)
+	@JoinColumn(name = "tavolo_id")
 	private Tavolo tavoloDiGioco;
 	
 	@ManyToMany

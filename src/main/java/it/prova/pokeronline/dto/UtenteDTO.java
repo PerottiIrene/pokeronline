@@ -53,10 +53,10 @@ public class UtenteDTO {
 	
 	private Integer creditoAccumulato;
 	
-	@JsonIgnoreProperties(value = { "utente" })
+//	@JsonIgnoreProperties(value = { "utente" })
 	private Set<TavoloDTO> tavoliCreati = new HashSet<TavoloDTO>(0);
 	
-	@JsonIgnoreProperties(value = { "utenti" })
+//	@JsonIgnoreProperties(value = { "utenti" })
 	@NotNull(message = "{tavolo.notnull}")
 	private TavoloDTO tavoloDiGioco;
 

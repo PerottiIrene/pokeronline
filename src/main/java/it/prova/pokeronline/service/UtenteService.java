@@ -15,7 +15,7 @@ public interface UtenteService {
 
 	public void aggiorna(Utente utenteInstance);
 
-	public void inserisciNuovo(Utente utenteInstance);
+	public Utente inserisciNuovo(Utente utenteInstance);
 
 	public void rimuovi(Long idToRemove);
 

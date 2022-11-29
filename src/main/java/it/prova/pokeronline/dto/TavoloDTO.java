@@ -33,10 +33,10 @@ public class TavoloDTO {
 	@NotNull(message = "{dataCreazione.notnull}")
 	private Date dataCreazione;
 	
-	@JsonIgnoreProperties(value = { "tavolo" })
+//	@JsonIgnoreProperties(value = { "tavolo" })
 	private Set<UtenteDTO> utentiGiocatori = new HashSet<UtenteDTO>(0);
 	
-	@JsonIgnoreProperties(value = { "tavoli" })
+//	@JsonIgnoreProperties(value = { "tavoli" })
 	@NotNull(message = "{utente.notnull}")
 	private UtenteDTO utenteCreazione;
 

@@ -1,6 +1,6 @@
 package it.prova.pokeronline.security.auth;
 
-import java.util.Collections;
+import java.util.Collections; 
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
