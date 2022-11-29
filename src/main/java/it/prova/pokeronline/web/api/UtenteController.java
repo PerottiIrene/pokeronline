@@ -6,14 +6,18 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.prova.pokeronline.dto.UtenteDTO;
@@ -21,6 +25,7 @@ import it.prova.pokeronline.model.Utente;
 import it.prova.pokeronline.security.dto.UtenteInfoJWTResponseDTO;
 import it.prova.pokeronline.service.UtenteService;
 import it.prova.pokeronline.web.api.exception.IdNotNullForInsertException;
+import it.prova.pokeronline.web.api.exception.OperazioneNegataException;
 import it.prova.pokeronline.web.api.exception.UtenteNotFoundException;
 
 @RestController
@@ -84,7 +89,7 @@ public class UtenteController {
 	}
 
 	@PutMapping("/{id}")
-	public UtenteDTO update(@Valid @RequestBody UtenteDTO utenteInput, @PathVariable(required = true) Long id) {
+	public UtenteDTO update(@Valid @RequestBody UtenteDTO utenteInput, @PathVariable(required = true) Long id) throws OperazioneNegataException {
 
 		try {
 			Utente utente = utenteService.caricaSingoloUtente(id);
@@ -95,6 +100,17 @@ public class UtenteController {
 			utenteInput.setId(id);
 			Utente utenteAggiornato = utenteService.aggiorna(utenteInput.buildUtenteModel(false));
 			return UtenteDTO.buildUtenteDTOFromModel(utenteAggiornato);
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+	@DeleteMapping("/{id}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void delete(@PathVariable(required = true) Long id) throws OperazioneNegataException {
+
+		try {
+			utenteService.rimuovi(id);
 		} catch (Exception e) {
 			throw e;
 		}

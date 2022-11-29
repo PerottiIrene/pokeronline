@@ -72,6 +72,8 @@ public class PokeronlineApplication implements CommandLineRunner {
 			classicPlayer.setEmail("u.user@prova.it");
 			classicPlayer.getRuoli()
 					.add(ruoloServiceInstance.cercaPerDescrizioneECodice("Classic player", Ruolo.ROLE_PLAYER));
+			classicPlayer.setCreditoAccumulato(0);
+			classicPlayer.setEsperienzaAccumulata(0);
 			utenteServiceInstance.inserisciNuovo(classicPlayer);
 			// l'inserimento avviene come created ma io voglio attivarlo
 			utenteServiceInstance.changeUserAbilitation(classicPlayer.getId());
@@ -88,6 +90,8 @@ public class PokeronlineApplication implements CommandLineRunner {
 			specialPlayer.setEmail("u.user1@prova.it");
 			specialPlayer.getRuoli()
 					.add(ruoloServiceInstance.cercaPerDescrizioneECodice("Special player", Ruolo.ROLE_SPECIAL_PLAYER));
+			specialPlayer.setCreditoAccumulato(0);
+			specialPlayer.setEsperienzaAccumulata(0);
 			utenteServiceInstance.inserisciNuovo(specialPlayer);
 			// l'inserimento avviene come created ma io voglio attivarlo
 			utenteServiceInstance.changeUserAbilitation(specialPlayer.getId());
