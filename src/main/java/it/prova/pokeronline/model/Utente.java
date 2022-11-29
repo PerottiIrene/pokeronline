@@ -103,6 +103,21 @@ public class Utente {
 		this.tavoloDiGioco = tavoloDiGioco;
 		this.ruoli = ruoli;
 	}
+	
+	public Utente(Long id, String username, String password,String nome, StatoUtente stato,String cognome,String email, Date dateCreated, Integer esperienzaAccumulata,
+			Integer creditoAccumulato) {
+		super();
+		this.id = id;
+		this.username = username;
+		this.password=password;
+		this.nome = nome;
+		this.cognome = cognome;
+		this.email=email;
+		this.dateCreated = dateCreated;
+		this.stato = stato;
+		this.esperienzaAccumulata = esperienzaAccumulata;
+		this.creditoAccumulato = creditoAccumulato;
+	}
 
 	public Long getId() {
 		return id;
@@ -203,6 +218,22 @@ public class Utente {
 	public boolean isAdmin() {
 		for (Ruolo ruoloItem : ruoli) {
 			if (ruoloItem.getCodice().equals(Ruolo.ROLE_ADMIN))
+				return true;
+		}
+		return false;
+	}
+	
+	public boolean isPlayer() {
+		for (Ruolo ruoloItem : ruoli) {
+			if (ruoloItem.getCodice().equals(Ruolo.ROLE_PLAYER))
+				return true;
+		}
+		return false;
+	}
+	
+	public boolean isSpecialPlayer() {
+		for (Ruolo ruoloItem : ruoli) {
+			if (ruoloItem.getCodice().equals(Ruolo.ROLE_SPECIAL_PLAYER))
 				return true;
 		}
 		return false;
