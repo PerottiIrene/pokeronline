@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import it.prova.pokeronline.model.StatoUtente;
 import it.prova.pokeronline.model.Utente;
 import it.prova.pokeronline.repository.utente.UtenteRepository;
+import it.prova.pokeronline.web.api.exception.OperazioneNegataException;
 
 @Service
 @Transactional(readOnly = true)
@@ -23,19 +25,43 @@ public class UtenteServiceImpl implements UtenteService {
 	private PasswordEncoder passwordEncoder;
 
 	public List<Utente> listAllUtenti() {
+		
+		String username=SecurityContextHolder.getContext().getAuthentication().getName();
+		Utente utenteInSessione=repository.findByUsername(username).orElse(null);
+		if(!utenteInSessione.isAdmin()) {
+			throw new OperazioneNegataException("accesso autorizzato solamente ad utenti admin");
+		}
 		return (List<Utente>) repository.findAll();
 	}
 
 	public Utente caricaSingoloUtente(Long id) {
+		
+		String username=SecurityContextHolder.getContext().getAuthentication().getName();
+		Utente utenteInSessione=repository.findByUsername(username).orElse(null);
+		if(!utenteInSessione.isAdmin()) {
+			throw new OperazioneNegataException("accesso autorizzato solamente ad utenti admin");
+		}
 		return repository.findById(id).orElse(null);
 	}
 
 	public Utente caricaSingoloUtenteConRuoli(Long id) {
+		
+		String username=SecurityContextHolder.getContext().getAuthentication().getName();
+		Utente utenteInSessione=repository.findByUsername(username).orElse(null);
+		if(!utenteInSessione.isAdmin()) {
+			throw new OperazioneNegataException("accesso autorizzato solamente ad utenti admin");
+		}
 		return repository.findByIdConRuoli(id).orElse(null);
 	}
 
 	@Transactional
-	public void aggiorna(Utente utenteInstance) {
+	public Utente aggiorna(Utente utenteInstance) {
+		
+		String username=SecurityContextHolder.getContext().getAuthentication().getName();
+		Utente utenteInSessione=repository.findByUsername(username).orElse(null);
+		if(!utenteInSessione.isAdmin()) {
+			throw new OperazioneNegataException("accesso autorizzato solamente ad utenti admin");
+		}
 		// deve aggiornare solo nome, cognome, username, ruoli
 		Utente utenteReloaded = repository.findById(utenteInstance.getId()).orElse(null);
 		if (utenteReloaded == null)
@@ -44,11 +70,17 @@ public class UtenteServiceImpl implements UtenteService {
 		utenteReloaded.setCognome(utenteInstance.getCognome());
 		utenteReloaded.setUsername(utenteInstance.getUsername());
 		utenteReloaded.setRuoli(utenteInstance.getRuoli());
-		repository.save(utenteReloaded);
+		return repository.save(utenteReloaded);
 	}
 
 	@Transactional
 	public Utente inserisciNuovo(Utente utenteInstance) {
+		
+		String username=SecurityContextHolder.getContext().getAuthentication().getName();
+		Utente utenteInSessione=repository.findByUsername(username).orElse(null);
+		if(!utenteInSessione.isAdmin()) {
+			throw new OperazioneNegataException("accesso autorizzato solamente ad utenti admin");
+		}
 		utenteInstance.setStato(StatoUtente.CREATO);
 		utenteInstance.setPassword(passwordEncoder.encode(utenteInstance.getPassword()));
 		utenteInstance.setDateCreated(new Date());
@@ -57,8 +89,13 @@ public class UtenteServiceImpl implements UtenteService {
 
 	@Transactional
 	public void rimuovi(Long idToRemove) {
+		
+		String username=SecurityContextHolder.getContext().getAuthentication().getName();
+		Utente utenteInSessione=repository.findByUsername(username).orElse(null);
+		if(!utenteInSessione.isAdmin()) {
+			throw new OperazioneNegataException("accesso autorizzato solamente ad utenti admin");
+		}
 		repository.deleteById(idToRemove);
-		;
 	}
 
 	public List<Utente> findByExample(Utente example) {
@@ -76,6 +113,12 @@ public class UtenteServiceImpl implements UtenteService {
 
 	@Transactional
 	public void changeUserAbilitation(Long utenteInstanceId) {
+		
+		String username=SecurityContextHolder.getContext().getAuthentication().getName();
+		Utente utenteInSessione=repository.findByUsername(username).orElse(null);
+		if(!utenteInSessione.isAdmin()) {
+			throw new OperazioneNegataException("accesso autorizzato solamente ad utenti admin");
+		}
 		Utente utenteInstance = caricaSingoloUtente(utenteInstanceId);
 		if (utenteInstance == null)
 			throw new RuntimeException("Elemento non trovato.");
