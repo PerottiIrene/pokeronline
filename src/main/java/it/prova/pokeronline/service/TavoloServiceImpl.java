@@ -43,8 +43,7 @@ public class TavoloServiceImpl implements TavoloService{
 
 	@Override
 	public Tavolo inserisciNuovo(Tavolo tavoloInstance) {
-		// TODO Auto-generated method stub
-		return null;
+		return tavoloRepository.save(tavoloInstance);
 	}
 
 	@Override
