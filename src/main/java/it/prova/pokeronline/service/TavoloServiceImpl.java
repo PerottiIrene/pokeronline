@@ -1,7 +1,9 @@
 package it.prova.pokeronline.service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,29 +14,30 @@ import it.prova.pokeronline.model.Ruolo;
 import it.prova.pokeronline.model.Tavolo;
 import it.prova.pokeronline.model.Utente;
 import it.prova.pokeronline.repository.tavolo.TavoloRepository;
+import it.prova.pokeronline.web.api.exception.CreditoInsufficienteException;
+import it.prova.pokeronline.web.api.exception.EsperienzaAccumulataInferioreException;
 import it.prova.pokeronline.web.api.exception.NonGiochiInNessunTavoloException;
 import it.prova.pokeronline.web.api.exception.NonPuoiGiocareInNessunTavoloException;
 import it.prova.pokeronline.web.api.exception.OperazioneNegataException;
 
 @Service
 @Transactional(readOnly = true)
-public class TavoloServiceImpl implements TavoloService{
-	
+public class TavoloServiceImpl implements TavoloService {
+
 	@Autowired
 	private TavoloRepository tavoloRepository;
-	
-	@Autowired 
-	private UtenteService utenteService;
 
+	@Autowired
+	private UtenteService utenteService;
 
 	@Override
 	public List<Tavolo> listAllElements(boolean eager) {
-		
-		if(eager)
-		return (List<Tavolo>) tavoloRepository.findAllEagerUtentiGiocatori();
-		
+
+		if (eager)
+			return (List<Tavolo>) tavoloRepository.findAllEagerUtentiGiocatori();
+
 		else
-		return (List<Tavolo>) tavoloRepository.findAll();
+			return (List<Tavolo>) tavoloRepository.findAll();
 	}
 
 	@Override
@@ -63,7 +66,7 @@ public class TavoloServiceImpl implements TavoloService{
 	@Transactional
 	public void rimuovi(Long idToRemove) {
 		tavoloRepository.deleteById(idToRemove);
-		
+
 	}
 
 	@Override
@@ -78,9 +81,9 @@ public class TavoloServiceImpl implements TavoloService{
 
 	@Override
 	public List<Tavolo> findAllByRole() {
-		if(utenteService.isThisRole(Ruolo.ROLE_SPECIAL_PLAYER))
+		if (utenteService.isThisRole(Ruolo.ROLE_SPECIAL_PLAYER))
 			return tavoloRepository.findAllSpecialPlayer(utenteService.utenteInSessione().getId());
-		else if(utenteService.isThisRole(Ruolo.ROLE_ADMIN))
+		else if (utenteService.isThisRole(Ruolo.ROLE_ADMIN))
 			return (List<Tavolo>) tavoloRepository.findAll();
 		else
 			throw new OperazioneNegataException("accesso negato");
@@ -88,9 +91,9 @@ public class TavoloServiceImpl implements TavoloService{
 
 	@Override
 	public Tavolo findByIdSpecialPlayer(Long idTavolo) {
-		if(utenteService.isThisRole(Ruolo.ROLE_SPECIAL_PLAYER))
-			return tavoloRepository.findByIdSpecialPlayer(utenteService.utenteInSessione().getId(),idTavolo).get(0);
-		else if(utenteService.isThisRole(Ruolo.ROLE_ADMIN))
+		if (utenteService.isThisRole(Ruolo.ROLE_SPECIAL_PLAYER))
+			return tavoloRepository.findByIdSpecialPlayer(utenteService.utenteInSessione().getId(), idTavolo).get(0);
+		else if (utenteService.isThisRole(Ruolo.ROLE_ADMIN))
 			return tavoloRepository.findById(idTavolo).orElse(null);
 		else
 			throw new OperazioneNegataException("accesso negato");
@@ -98,10 +101,10 @@ public class TavoloServiceImpl implements TavoloService{
 
 	@Override
 	public Tavolo lastGame(Long id) {
-		
-		Tavolo tavolo=tavoloRepository.findByUtentiGiocatori_id(id);
-		
-		if(tavolo == null) {
+
+		Tavolo tavolo = tavoloRepository.findByUtentiGiocatori_id(id);
+
+		if (tavolo == null) {
 			throw new NonGiochiInNessunTavoloException("non sei presente in nessun tavolo");
 		}
 		return tavolo;
@@ -109,20 +112,39 @@ public class TavoloServiceImpl implements TavoloService{
 
 	@Override
 	public List<Tavolo> ricercaTavoli() {
-		
-		List<Tavolo> listaTavoli= (List<Tavolo>) tavoloRepository.findAll();
-		Utente utenteInSessione=utenteService.utenteInSessione();
-		List<Tavolo> tavoliDovePossoGiocare=new ArrayList<>();
-		
-		for(Tavolo tavoloItem: listaTavoli) {
-			if(tavoloItem.getEsperienzaMinima() <= utenteInSessione.getEsperienzaAccumulata())
+
+		List<Tavolo> listaTavoli = (List<Tavolo>) tavoloRepository.findAll();
+		Utente utenteInSessione = utenteService.utenteInSessione();
+		List<Tavolo> tavoliDovePossoGiocare = new ArrayList<>();
+
+		for (Tavolo tavoloItem : listaTavoli) {
+			if (tavoloItem.getEsperienzaMinima() <= utenteInSessione.getEsperienzaAccumulata())
 				tavoliDovePossoGiocare.add(tavoloItem);
 		}
-		
-		if(tavoliDovePossoGiocare.size() == 0 || tavoliDovePossoGiocare.size() < 0) {
-			throw new NonPuoiGiocareInNessunTavoloException("non ci sono tavoli in cui puoi giocare, la tua esperienza e' bassa rispetto all'esperienza richiest dai tavoli");
+
+		if (tavoliDovePossoGiocare.size() == 0 || tavoliDovePossoGiocare.size() < 0) {
+			throw new NonPuoiGiocareInNessunTavoloException(
+					"non ci sono tavoli in cui puoi giocare, la tua esperienza e' bassa rispetto all'esperienza richiesta dai tavoli");
 		}
 		return tavoliDovePossoGiocare;
+	}
+
+	@Override
+	public Tavolo giocaPartita(Long idTavolo) {
+
+		Utente utenteInSessione = utenteService.utenteInSessione();
+		Set<Utente> utentiInPartita = new HashSet<>();
+		utentiInPartita.add(utenteInSessione);
+		Tavolo tavoloPerPartita = tavoloRepository.findById(idTavolo).orElse(null);
+
+		tavoloPerPartita.setUtentiGiocatori(utentiInPartita);
+
+		int totDaAggiungereOSottrarre = (int) Math.random() * 1000;
+		utenteInSessione.setCreditoAccumulato(utenteInSessione.getCreditoAccumulato() + totDaAggiungereOSottrarre);
+
+		utenteService.aggiorna(utenteInSessione);
+
+		return tavoloPerPartita;
 	}
 
 }

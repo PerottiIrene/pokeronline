@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import it.prova.pokeronline.dto.TavoloDTO;
 import it.prova.pokeronline.model.Tavolo;
 import it.prova.pokeronline.model.Utente;
+import it.prova.pokeronline.repository.tavolo.TavoloRepository;
 import it.prova.pokeronline.service.TavoloService;
 import it.prova.pokeronline.service.UtenteService;
+import it.prova.pokeronline.web.api.exception.CreditoInsufficienteException;
+import it.prova.pokeronline.web.api.exception.EsperienzaAccumulataInferioreException;
 import it.prova.pokeronline.web.api.exception.NonGiochiInNessunTavoloException;
 import it.prova.pokeronline.web.api.exception.NonPuoiGiocareInNessunTavoloException;
 
@@ -27,6 +30,9 @@ public class GameController {
 
 	@Autowired
 	private TavoloService tavoloService;
+	
+	@Autowired
+	private TavoloRepository tavoloRepository;
 
 	@PostMapping("/compraCredito/{credito}")
 	public Integer compraCredito(@PathVariable(value = "credito", required = true) @RequestBody Integer credito) {
@@ -54,5 +60,31 @@ public class GameController {
 			throw e;
 		}
 	}
+	
+	@GetMapping("/gioca/{id}")
+	public TavoloDTO gioca(@PathVariable(value = "id", required = true) @RequestBody Long id) throws Exception{
+		
+		Utente utenteInSessione = utenteService.utenteInSessione();
+		Tavolo tavoloPerPartita = tavoloRepository.findById(id).orElse(null);
+		
+		if (tavoloPerPartita.getEsperienzaMinima() <= utenteInSessione.getEsperienzaAccumulata())
+			throw new EsperienzaAccumulataInferioreException(
+					"non puoi giocare in questo tavolo, la tua esperienza e' inferiore a quella richiesta");
+		
+		if (utenteInSessione.getCreditoAccumulato() < 0 || utenteInSessione.getCreditoAccumulato() == 0) {
+			throw new CreditoInsufficienteException("il tuo credito e' esaurito, non puoi continuare a giocare");
+		}
+		
+		try {
+			return TavoloDTO.buildTavoloDTOFromModel(tavoloService.giocaPartita(id),true);
+		}catch(Exception e) {
+			throw e;
+		}
+	}
+	
+	
+	
+	
+	}
 
-}
+

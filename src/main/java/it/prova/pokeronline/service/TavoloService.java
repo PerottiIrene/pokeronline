@@ -30,5 +30,7 @@ public interface TavoloService {
 	Tavolo lastGame(Long idU);
 	
 	List<Tavolo> ricercaTavoli();
+	
+	public Tavolo giocaPartita(Long idTavolo);
 
 }
