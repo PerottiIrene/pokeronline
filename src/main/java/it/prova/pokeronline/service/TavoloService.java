@@ -22,5 +22,9 @@ public interface TavoloService {
 	List<Tavolo> findByDenominazione(String denominazione);
 	
 	List<Tavolo> listAllElementsEager();
+	
+	List<Tavolo> findAllByRole();
+	
+	Tavolo findByIdSpecialPlayer( Long idTavolo);
 
 }

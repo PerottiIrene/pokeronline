@@ -53,7 +53,7 @@ public class UtenteDTO {
 	
 	private Integer creditoAccumulato;
 	
-//	@JsonIgnoreProperties(value = { "utentiGiocatori" })
+	@JsonIgnoreProperties(value = { "utentiGiocatori" })
 	private TavoloDTO tavoloDiGioco;
 
 	public UtenteDTO() {

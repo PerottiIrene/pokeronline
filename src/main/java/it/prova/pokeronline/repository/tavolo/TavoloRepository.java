@@ -17,6 +17,12 @@ public interface TavoloRepository extends CrudRepository<Tavolo, Long>{
 	
 	Tavolo findByDenominazione(String denominazione);
 	
+	@Query("from Tavolo t left join t.utenteCreazione u where u.id=?1")
+	List<Tavolo> findAllSpecialPlayer(Long id);
+	
+	@Query("from Tavolo t left join t.utenteCreazione u where u.id=?1 and t.id=?1")
+	List<Tavolo> findByIdSpecialPlayer(Long idUtente, Long idTavolo);
+	
 	
 
 }

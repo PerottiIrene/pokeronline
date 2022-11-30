@@ -30,15 +30,17 @@ public class TavoloDTO {
 	@NotBlank(message = "{denominazione.notblank}")
 	private String denominazione;
 	
-	@NotNull(message = "{dataCreazione.notnull}")
+//	@NotNull(message = "{dataCreazione.notnull}")
 	private Date dataCreazione;
 	
 //	@JsonIgnoreProperties(value = { "tavolo" })
 	private Set<UtenteDTO> utentiGiocatori = new HashSet<UtenteDTO>(0);
 	
-//	@JsonIgnoreProperties(value = { "tavoli" })
-	@NotNull(message = "{utente.notnull}")
+	@JsonIgnoreProperties(value = { "tavoli" })
+//	@NotNull(message = "{utente.notnull}")
 	private UtenteDTO utenteCreazione;
+	
+	public TavoloDTO() {}
 
 	public TavoloDTO(Long id, Integer esperienzaMinima, Integer cifraMinima,String denominazione, Date dataCreazione, Set<UtenteDTO> utentiGiocatori, UtenteDTO utenteCreazione) {
 		super();
