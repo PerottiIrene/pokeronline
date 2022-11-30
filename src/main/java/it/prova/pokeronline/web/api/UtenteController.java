@@ -89,7 +89,8 @@ public class UtenteController {
 	}
 
 	@PutMapping("/{id}")
-	public UtenteDTO update(@Valid @RequestBody UtenteDTO utenteInput, @PathVariable(required = true) Long id) throws OperazioneNegataException {
+	public UtenteDTO update(@Valid @RequestBody UtenteDTO utenteInput, @PathVariable(required = true) Long id)
+			throws OperazioneNegataException {
 
 		try {
 			Utente utente = utenteService.caricaSingoloUtente(id);

@@ -31,7 +31,7 @@ public class GameController {
 
 	@Autowired
 	private TavoloService tavoloService;
-	
+
 	@Autowired
 	private TavoloRepository tavoloRepository;
 
@@ -46,7 +46,7 @@ public class GameController {
 
 		try {
 			Utente utenteInSessione = utenteService.utenteInSessione();
-			return TavoloDTO.buildTavoloDTOFromModel(tavoloService.lastGame(utenteInSessione.getId()), false);
+			return TavoloDTO.buildTavoloDTOFromModel(tavoloService.lastGame(utenteInSessione.getId()), true);
 		} catch (Exception e) {
 			throw e;
 		}
@@ -61,47 +61,45 @@ public class GameController {
 			throw e;
 		}
 	}
-	
+
 	@GetMapping("/gioca/{id}")
-	public TavoloDTO gioca(@PathVariable(value = "id", required = true) @RequestBody Long id) throws Exception{
-		
+	public TavoloDTO gioca(@PathVariable(value = "id", required = true) @RequestBody Long id) throws Exception {
+
 		Utente utenteInSessione = utenteService.utenteInSessione();
 		Tavolo tavoloPerPartita = tavoloRepository.findById(id).orElse(null);
-		
+
 		if (tavoloPerPartita.getEsperienzaMinima() <= utenteInSessione.getEsperienzaAccumulata())
 			throw new EsperienzaAccumulataInferioreException(
 					"non puoi giocare in questo tavolo, la tua esperienza e' inferiore a quella richiesta");
-		
+
 		if (utenteInSessione.getCreditoAccumulato() < 0 || utenteInSessione.getCreditoAccumulato() == 0) {
 			throw new CreditoInsufficienteException("il tuo credito e' esaurito, non puoi continuare a giocare");
 		}
-		
-			return TavoloDTO.buildTavoloDTOFromModel(tavoloService.giocaPartita(id),true);
+
+		return TavoloDTO.buildTavoloDTOFromModel(tavoloService.giocaPartita(id), true);
 	}
-	
+
 	@GetMapping("/abbandonaPartita/{id}")
-	public TavoloDTO abbandonaPartita(@PathVariable(value = "id", required = true) @RequestBody Long id) throws Exception{
-		
+	public TavoloDTO abbandonaPartita(@PathVariable(value = "id", required = true) @RequestBody Long id)
+			throws Exception {
+
 		Utente utenteInSessione = utenteService.utenteInSessione();
 		Tavolo tavoloPerPartita = tavoloRepository.findById(id).orElse(null);
-		
-		if(tavoloPerPartita == null) {
+
+		if (tavoloPerPartita == null) {
 			throw new TavoloNotFoundException("tavolo non trovato");
 		}
-		
-		for(Utente utenteItem: tavoloPerPartita.getUtentiGiocatori()) {
-			if(utenteItem.getId() == utenteInSessione.getId()) {
-			    tavoloPerPartita.getUtentiGiocatori().remove(utenteInSessione);
+
+		for (Utente utenteItem : tavoloPerPartita.getUtentiGiocatori()) {
+			if (utenteItem.getId() == utenteInSessione.getId()) {
+				tavoloPerPartita.getUtentiGiocatori().remove(utenteInSessione);
 			}
 		}
-		
-		utenteInSessione.setEsperienzaAccumulata(utenteInSessione.getEsperienzaAccumulata() +2);
+
+		utenteInSessione.setEsperienzaAccumulata(utenteInSessione.getEsperienzaAccumulata() + 2);
 		utenteService.aggiorna(utenteInSessione);
-		
-		
+
 		return TavoloDTO.buildTavoloDTOFromModel(tavoloService.caricaSingoloElemento(id), false);
 	}
-	
+
 }
-
-

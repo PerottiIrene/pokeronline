@@ -1,6 +1,7 @@
 package it.prova.pokeronline.repository.tavolo;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -23,7 +24,9 @@ public interface TavoloRepository extends CrudRepository<Tavolo, Long>{
 	@Query("from Tavolo t left join t.utenteCreazione u where u.id=?1 and t.id=?1")
 	List<Tavolo> findByIdSpecialPlayer(Long idUtente, Long idTavolo);
 	
-	Tavolo findByUtentiGiocatori_id(Long id);
+	Optional<Tavolo> findByUtentiGiocatori_id(Long id);
+	
+	
 	
 	
 	

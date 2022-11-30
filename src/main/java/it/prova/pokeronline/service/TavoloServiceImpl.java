@@ -100,12 +100,13 @@ public class TavoloServiceImpl implements TavoloService {
 	}
 
 	@Override
+	@Transactional
 	public Tavolo lastGame(Long id) {
 
-		Tavolo tavolo = tavoloRepository.findByUtentiGiocatori_id(id);
+		Tavolo tavolo = tavoloRepository.findByUtentiGiocatori_id(id).orElse(null);
 
 		if (tavolo == null) {
-			throw new NonGiochiInNessunTavoloException("non sei presente in nessun tavolo");
+			throw new NonGiochiInNessunTavoloException("nessun tavolo trovato");
 		}
 		return tavolo;
 	}

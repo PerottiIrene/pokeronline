@@ -36,7 +36,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(UtenteNotFoundException.class)
-	public ResponseEntity<Object> handleFilmNotFoundException(UtenteNotFoundException ex, WebRequest request) {
+	public ResponseEntity<Object> handleUtenteNotFoundException(UtenteNotFoundException ex, WebRequest request) {
 
 		Map<String, Object> body = new LinkedHashMap<>();
 		body.put("timestamp", LocalDateTime.now());
@@ -47,7 +47,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(TavoloNotFoundException.class)
-	public ResponseEntity<Object> handleRegistaNotFoundException(TavoloNotFoundException ex, WebRequest request) {
+	public ResponseEntity<Object> handleTavoloNotFoundException(TavoloNotFoundException ex, WebRequest request) {
 
 		Map<String, Object> body = new LinkedHashMap<>();
 		body.put("timestamp", LocalDateTime.now());
@@ -59,6 +59,18 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(IdNotNullForInsertException.class)
 	public ResponseEntity<Object> handleIdNotNullForInsertException(IdNotNullForInsertException ex,
+			WebRequest request) {
+
+		Map<String, Object> body = new LinkedHashMap<>();
+		body.put("timestamp", LocalDateTime.now());
+		body.put("message", ex.getMessage());
+		body.put("status", HttpStatus.UNPROCESSABLE_ENTITY);
+
+		return new ResponseEntity<>(body, HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+	
+	@ExceptionHandler(EsperienzaAccumulataInferioreException.class)
+	public ResponseEntity<Object> handleIdNotNullForInsertException(EsperienzaAccumulataInferioreException ex,
 			WebRequest request) {
 
 		Map<String, Object> body = new LinkedHashMap<>();
