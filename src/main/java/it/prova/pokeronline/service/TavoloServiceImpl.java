@@ -1,5 +1,6 @@
 package it.prova.pokeronline.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import it.prova.pokeronline.model.Tavolo;
 import it.prova.pokeronline.model.Utente;
 import it.prova.pokeronline.repository.tavolo.TavoloRepository;
 import it.prova.pokeronline.web.api.exception.NonGiochiInNessunTavoloException;
+import it.prova.pokeronline.web.api.exception.NonPuoiGiocareInNessunTavoloException;
 import it.prova.pokeronline.web.api.exception.OperazioneNegataException;
 
 @Service
@@ -103,6 +105,24 @@ public class TavoloServiceImpl implements TavoloService{
 			throw new NonGiochiInNessunTavoloException("non sei presente in nessun tavolo");
 		}
 		return tavolo;
+	}
+
+	@Override
+	public List<Tavolo> ricercaTavoli() {
+		
+		List<Tavolo> listaTavoli= (List<Tavolo>) tavoloRepository.findAll();
+		Utente utenteInSessione=utenteService.utenteInSessione();
+		List<Tavolo> tavoliDovePossoGiocare=new ArrayList<>();
+		
+		for(Tavolo tavoloItem: listaTavoli) {
+			if(tavoloItem.getEsperienzaMinima() <= utenteInSessione.getEsperienzaAccumulata())
+				tavoliDovePossoGiocare.add(tavoloItem);
+		}
+		
+		if(tavoliDovePossoGiocare.size() == 0 || tavoliDovePossoGiocare.size() < 0) {
+			throw new NonPuoiGiocareInNessunTavoloException("non ci sono tavoli in cui puoi giocare, la tua esperienza e' bassa rispetto all'esperienza richiest dai tavoli");
+		}
+		return tavoliDovePossoGiocare;
 	}
 
 }
