@@ -20,6 +20,7 @@ import it.prova.pokeronline.web.api.exception.CreditoInsufficienteException;
 import it.prova.pokeronline.web.api.exception.EsperienzaAccumulataInferioreException;
 import it.prova.pokeronline.web.api.exception.NonGiochiInNessunTavoloException;
 import it.prova.pokeronline.web.api.exception.NonPuoiGiocareInNessunTavoloException;
+import it.prova.pokeronline.web.api.exception.TavoloNotFoundException;
 
 @RestController
 @RequestMapping("/api/game")
@@ -67,24 +68,40 @@ public class GameController {
 		Utente utenteInSessione = utenteService.utenteInSessione();
 		Tavolo tavoloPerPartita = tavoloRepository.findById(id).orElse(null);
 		
-		if (tavoloPerPartita.getEsperienzaMinima() <= utenteInSessione.getEsperienzaAccumulata())
-			throw new EsperienzaAccumulataInferioreException(
-					"non puoi giocare in questo tavolo, la tua esperienza e' inferiore a quella richiesta");
+//		if (tavoloPerPartita.getEsperienzaMinima() <= utenteInSessione.getEsperienzaAccumulata())
+//			throw new EsperienzaAccumulataInferioreException(
+//					"non puoi giocare in questo tavolo, la tua esperienza e' inferiore a quella richiesta");
+//		
+//		if (utenteInSessione.getCreditoAccumulato() < 0 || utenteInSessione.getCreditoAccumulato() == 0) {
+//			throw new CreditoInsufficienteException("il tuo credito e' esaurito, non puoi continuare a giocare");
+//		}
 		
-		if (utenteInSessione.getCreditoAccumulato() < 0 || utenteInSessione.getCreditoAccumulato() == 0) {
-			throw new CreditoInsufficienteException("il tuo credito e' esaurito, non puoi continuare a giocare");
-		}
-		
-		try {
 			return TavoloDTO.buildTavoloDTOFromModel(tavoloService.giocaPartita(id),true);
-		}catch(Exception e) {
-			throw e;
+	}
+	
+	@GetMapping("/abbandonaPartita/{id}")
+	public TavoloDTO abbandonaPartita(@PathVariable(value = "id", required = true) @RequestBody Long id) throws Exception{
+		
+		Utente utenteInSessione = utenteService.utenteInSessione();
+		Tavolo tavoloPerPartita = tavoloRepository.findById(id).orElse(null);
+		
+		if(tavoloPerPartita == null) {
+			throw new TavoloNotFoundException("tavolo non trovato");
 		}
+		
+		for(Utente utenteItem: tavoloPerPartita.getUtentiGiocatori()) {
+			if(utenteItem.getId() == utenteInSessione.getId()) {
+			    tavoloPerPartita.getUtentiGiocatori().remove(utenteInSessione);
+			}
+		}
+		
+		utenteInSessione.setEsperienzaAccumulata(utenteInSessione.getEsperienzaAccumulata() +2);
+		utenteService.aggiorna(utenteInSessione);
+		
+		
+		return TavoloDTO.buildTavoloDTOFromModel(tavoloService.caricaSingoloElemento(id), false);
 	}
 	
-	
-	
-	
-	}
+}
 
 

@@ -130,6 +130,7 @@ public class TavoloServiceImpl implements TavoloService {
 	}
 
 	@Override
+	@Transactional
 	public Tavolo giocaPartita(Long idTavolo) {
 
 		Utente utenteInSessione = utenteService.utenteInSessione();
