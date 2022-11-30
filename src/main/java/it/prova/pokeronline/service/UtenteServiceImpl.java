@@ -143,10 +143,11 @@ public class UtenteServiceImpl implements UtenteService {
 	public Integer compraCredito(Integer credito) {
 		
 		Utente utenteinSessione=utenteInSessione();
-		if(utenteinSessione.getCreditoAccumulato() == null)
+		if(utenteinSessione.getCreditoAccumulato() == null) {
 			utenteinSessione.setCreditoAccumulato(credito);
-		else
+		}else {
 			utenteinSessione.setCreditoAccumulato(utenteinSessione.getCreditoAccumulato() + credito);
+		}
 		repository.save(utenteinSessione);
 		return utenteinSessione.getCreditoAccumulato();
 	}

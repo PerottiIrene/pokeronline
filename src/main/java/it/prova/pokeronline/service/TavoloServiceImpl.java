@@ -11,6 +11,7 @@ import it.prova.pokeronline.model.Ruolo;
 import it.prova.pokeronline.model.Tavolo;
 import it.prova.pokeronline.model.Utente;
 import it.prova.pokeronline.repository.tavolo.TavoloRepository;
+import it.prova.pokeronline.web.api.exception.NonGiochiInNessunTavoloException;
 import it.prova.pokeronline.web.api.exception.OperazioneNegataException;
 
 @Service
@@ -91,6 +92,17 @@ public class TavoloServiceImpl implements TavoloService{
 			return tavoloRepository.findById(idTavolo).orElse(null);
 		else
 			throw new OperazioneNegataException("accesso negato");
+	}
+
+	@Override
+	public Tavolo lastGame(Long id) {
+		
+		Tavolo tavolo=tavoloRepository.findByUtentiGiocatori_id(id);
+		
+		if(tavolo == null) {
+			throw new NonGiochiInNessunTavoloException("non sei presente in nessun tavolo");
+		}
+		return tavolo;
 	}
 
 }

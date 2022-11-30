@@ -26,5 +26,7 @@ public interface TavoloService {
 	List<Tavolo> findAllByRole();
 	
 	Tavolo findByIdSpecialPlayer( Long idTavolo);
+	
+	Tavolo lastGame(Long idU);
 
 }
