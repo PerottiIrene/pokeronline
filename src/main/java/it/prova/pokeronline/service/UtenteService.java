@@ -32,5 +32,7 @@ public interface UtenteService {
 	public Utente findByUsername(String username);
 	
 	public boolean isThisRole(String ruolo);
+	
+	public Integer compraCredito(Integer credito);
 
 }

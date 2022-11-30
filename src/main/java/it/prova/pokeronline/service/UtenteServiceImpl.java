@@ -139,4 +139,16 @@ public class UtenteServiceImpl implements UtenteService {
 		return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().anyMatch(roleItem -> roleItem.getAuthority().equals(ruoloUtente));
 	}
 
+	@Override
+	public Integer compraCredito(Integer credito) {
+		
+		Utente utenteinSessione=utenteInSessione();
+		if(utenteinSessione.getCreditoAccumulato() == null)
+			utenteinSessione.setCreditoAccumulato(credito);
+		else
+			utenteinSessione.setCreditoAccumulato(utenteinSessione.getCreditoAccumulato() + credito);
+		repository.save(utenteinSessione);
+		return utenteinSessione.getCreditoAccumulato();
+	}
+
 }

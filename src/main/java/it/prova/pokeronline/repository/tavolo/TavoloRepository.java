@@ -24,5 +24,6 @@ public interface TavoloRepository extends CrudRepository<Tavolo, Long>{
 	List<Tavolo> findByIdSpecialPlayer(Long idUtente, Long idTavolo);
 	
 	
+	
 
 }
