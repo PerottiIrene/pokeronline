@@ -68,13 +68,13 @@ public class GameController {
 		Utente utenteInSessione = utenteService.utenteInSessione();
 		Tavolo tavoloPerPartita = tavoloRepository.findById(id).orElse(null);
 		
-//		if (tavoloPerPartita.getEsperienzaMinima() <= utenteInSessione.getEsperienzaAccumulata())
-//			throw new EsperienzaAccumulataInferioreException(
-//					"non puoi giocare in questo tavolo, la tua esperienza e' inferiore a quella richiesta");
-//		
-//		if (utenteInSessione.getCreditoAccumulato() < 0 || utenteInSessione.getCreditoAccumulato() == 0) {
-//			throw new CreditoInsufficienteException("il tuo credito e' esaurito, non puoi continuare a giocare");
-//		}
+		if (tavoloPerPartita.getEsperienzaMinima() <= utenteInSessione.getEsperienzaAccumulata())
+			throw new EsperienzaAccumulataInferioreException(
+					"non puoi giocare in questo tavolo, la tua esperienza e' inferiore a quella richiesta");
+		
+		if (utenteInSessione.getCreditoAccumulato() < 0 || utenteInSessione.getCreditoAccumulato() == 0) {
+			throw new CreditoInsufficienteException("il tuo credito e' esaurito, non puoi continuare a giocare");
+		}
 		
 			return TavoloDTO.buildTavoloDTOFromModel(tavoloService.giocaPartita(id),true);
 	}
